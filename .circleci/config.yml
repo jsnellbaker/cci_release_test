@@ -5,22 +5,14 @@ aliases:
         - image: circleci/node:12.16.1
       working_directory: ~/test_pbjs
 
-  - &pbjs_env
-      working_directory: ~/test_pbjs/Prebid.js
-
   - &pbjs_checkout
       name: Checkout Prebid.js project
       command: git clone https://github.com/prebid/Prebid.js.git
 
-  - &switch_dir
-      name: Move into Prebid.js show_dir
-      command: |
-        cd Prebid.js
-        ls
-
   - &npm_test
       name: Run NPM steps
       command: |
+        cd Prebid.js
         test -f ~/.npmrc && echo ".npmrc exists." || echo ".npmrc does not exist."
         npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
         npm set registry https://registry.npmjs.org
@@ -29,9 +21,6 @@ aliases:
 
   - &run_pbjs_setup_steps
     - run: *pbjs_checkout
-    - run: *switch_dir
-  
-  - &run_npm_steps
     - run: *npm_test
 
 version: 2
@@ -41,10 +30,6 @@ jobs:
     <<: *base_env
     steps: *run_pbjs_setup_steps
 
-  run_npm_setup_publish:
-    <<: *pbjs_env
-    steps: *run_npm_steps
-
 
 # Orchestrate or schedule a set of jobs
 workflows:
@@ -52,7 +37,6 @@ workflows:
   commit:
     jobs:
       - run_pbjs_setup
-      - run_npm_setup_publish
 
 experimental:
   pipelines: true
