@@ -1,0 +1,47 @@
+aliases: 
+  - &environment
+      docker:
+        # specify the version you desire here
+        - image: circleci/node:12.16.1
+      resource_class: xlarge
+        # Specify service dependencies here if necessary
+        # CircleCI maintains a library of pre-built images
+        # documented at https://circleci.com/docs/2.0/circleci-images/
+        # - image: circleci/mongo:3.4.4
+      working_directory: ~/test_pbjs
+
+  - &pbjs_checkout
+      name: Checkout Prebid.js project
+      command: git clone https://github.com/prebid/Prebid.js.git
+
+  - &show_dir
+      name: run ls
+      command: ls
+
+  - &npm_test
+      name: Run NPM steps
+      command: |
+        npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+        npm set registry https://registry.npmjs.org
+
+  - &run_steps
+    - run: *pbjs_checkout
+    - run: *show_dir
+    - run: *npm_test
+
+version: 2
+
+jobs:
+  run_release:
+    <<: *environment
+    steps: *run_steps
+
+# Orchestrate or schedule a set of jobs
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - run_release
+
+experimental:
+  pipelines: true
