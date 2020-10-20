@@ -7,7 +7,11 @@ aliases:
 
   - &pbjs_checkout
       name: Checkout Prebid.js project
-      command: git clone https://github.com/prebid/Prebid.js.git && cd Prebid.js
+      command: git clone https://github.com/prebid/Prebid.js.git
+
+  - &switch_dir
+      name: Move into Prebid.js show_dir
+      command: cd Prebid.js
 
   - &show_dir
       name: run ls
@@ -16,6 +20,7 @@ aliases:
   - &npm_test
       name: Run NPM steps
       command: |
+        cat ~/.npmrc
         npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
         npm set registry https://registry.npmjs.org
         npm token list
