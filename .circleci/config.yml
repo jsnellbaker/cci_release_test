@@ -11,7 +11,9 @@ aliases:
 
   - &switch_dir
       name: Move into Prebid.js show_dir
-      command: cd Prebid.js
+      command: |
+        cd Prebid.js
+        ls
 
   - &show_dir
       name: run ls
