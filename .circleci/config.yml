@@ -20,7 +20,7 @@ aliases:
   - &npm_test
       name: Run NPM steps
       command: |
-        cat ~/.npmrc
+        test -f ~/.npmrc && echo ".npmrc exists." || echo ".npmrc does not exist."
         npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
         npm set registry https://registry.npmjs.org
         npm token list
