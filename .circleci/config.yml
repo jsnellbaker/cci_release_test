@@ -13,22 +13,23 @@ aliases:
       name: Run NPM steps
       command: |
         cd Prebid.js
+        ls
         test -f ~/.npmrc && echo ".npmrc exists." || echo ".npmrc does not exist."
         npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
         npm set registry https://registry.npmjs.org
         npm token list
         cat ~/.npmrc
 
-  - &run_pbjs_setup_steps
+  - &run_release_steps
     - run: *pbjs_checkout
     - run: *npm_test
 
 version: 2
 
 jobs:
-  run_pbjs_setup:
+  run_release:
     <<: *base_env
-    steps: *run_pbjs_setup_steps
+    steps: *run_release_steps
 
 
 # Orchestrate or schedule a set of jobs
@@ -36,7 +37,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      - run_pbjs_setup
+      - run_release
 
 experimental:
   pipelines: true
