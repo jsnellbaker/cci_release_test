@@ -1,9 +1,12 @@
 aliases: 
-  - &environment
+  - &base_env
       docker:
         # specify the version you desire here
         - image: circleci/node:12.16.1
       working_directory: ~/test_pbjs
+
+  - &pbjs_env
+      working_directory: ~/test_pbjs/Prebid.js
 
   - &pbjs_checkout
       name: Checkout Prebid.js project
@@ -15,10 +18,6 @@ aliases:
         cd Prebid.js
         ls
 
-  - &show_dir
-      name: run ls
-      command: ls
-
   - &npm_test
       name: Run NPM steps
       command: |
@@ -28,25 +27,32 @@ aliases:
         npm token list
         cat ~/.npmrc
 
-  - &run_steps
+  - &run_pbjs_setup_steps
     - run: *pbjs_checkout
     - run: *switch_dir
-    - run: *show_dir
+  
+  - &run_npm_steps
     - run: *npm_test
 
 version: 2
 
 jobs:
-  run_release:
-    <<: *environment
-    steps: *run_steps
+  run_pbjs_setup:
+    <<: *base_env
+    steps: *run_pbjs_setup_steps
+
+  run_npm_setup_publish:
+    <<: *pbjs_env
+    steps: *run_npm_steps
+
 
 # Orchestrate or schedule a set of jobs
 workflows:
   version: 2
   commit:
     jobs:
-      - run_release
+      - run_pbjs_setup
+      - run_npm_setup_publish
 
 experimental:
   pipelines: true
