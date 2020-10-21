@@ -1,0 +1,43 @@
+aliases: 
+  - &base_env
+      docker:
+        # specify the version you desire here
+        - image: circleci/node:12.16.1
+      working_directory: ~/test_pbjs
+
+  - &pbjs_checkout
+      name: Checkout Prebid.js project
+      command: git clone https://github.com/prebid/Prebid.js.git
+
+  - &npm_test
+      name: Run NPM steps
+      command: |
+        cd Prebid.js
+        ls
+        test -f ~/.npmrc && echo ".npmrc exists." || echo ".npmrc does not exist."
+        npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+        npm set registry https://registry.npmjs.org
+        npm token list
+        cat ~/.npmrc
+
+  - &run_release_steps
+    - run: *pbjs_checkout
+    - run: *npm_test
+
+version: 2
+
+jobs:
+  run_release:
+    <<: *base_env
+    steps: *run_release_steps
+
+
+# Orchestrate or schedule a set of jobs
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - run_release
+
+experimental:
+  pipelines: true
